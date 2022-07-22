@@ -1,11 +1,7 @@
-import Deck, { generateDeck } from './Deck.js';
-import checkSlap from './Conditions.js';
+import Deck, { generateDeck } from './server/Deck.js';
+import checkSlap from './server/Conditions.js';
 
-/*
-const app = require('express')();
-const httpServer = require('http').createServer(app);
-const { Server } = require('socket.io');
-const io = new Server(httpServer);*/
+let socket = io('http://localhost:3000');
 
 const body = document.querySelector('body');
 const bottomMiddle = document.createElement('div');
@@ -52,4 +48,3 @@ discardContainer.addEventListener('click', () => {
         console.log('Bad slap!');
     }
 });
-

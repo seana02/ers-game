@@ -73,13 +73,13 @@ export default class Card {
                 suitValue = 'DIAMOND';
                 break;
         }
-        img.src = `./assets/Cards/${suitValue}-${this.val}.svg`;
+        img.src = `./server/assets/Cards/${suitValue}-${this.val}.svg`;
         return img;
     }
     getBackHTML() {
         const img = new Image();
         img.draggable = false;
-        img.src = './assets/Cards/CARD-BACK.svg';
+        img.src = './server/assets/Cards/CARD-BACK.svg';
         return img;
     }
 
@@ -90,4 +90,3 @@ function addSampleCard() {
     aceofspades = new Card(1, '♠');
     document.querySelector('body').appendChild(aceofspades.getComponent());
 }
-
