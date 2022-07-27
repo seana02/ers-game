@@ -47,7 +47,7 @@ export default class Card {
         const img = new Image();
         img.draggable = false;
         if (this.val === 0) {
-            img.src = `./assets/Cards/JOKER-${this.color.toUpperCase()}.svg`;
+            img.src = `./server/assets/Cards/JOKER-${this.color.toUpperCase()}.svg`;
             return img;
         }
         let suitValue;

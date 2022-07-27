@@ -14,7 +14,9 @@ export default class Deck {
     draw() { return this.cards.pop(); }
     drawBottom() { return this.cards.shift(); }
     replaceTop(pile) {
-        if (pile instanceof Array) {
+        if (pile.cards) {
+            this.cards = [...this.cards, ...pile.cards];
+        } else if (pile instanceof Array) {
             this.cards = [...this.cards, ...pile];
         } else if (pile.isCard()) {
             this.cards = [...this.cards, pile];
@@ -22,11 +24,17 @@ export default class Deck {
         return this;
     }
     replaceBottom(pile) {
-        if (pile instanceof Array) {
+        if (pile.cards) {
+            this.cards = [...pile.cards, ...this.cards];
+        } else if (pile instanceof Array) {
             this.cards = [...pile, ...this.cards];
         } else if (pile.isCard()) {
             this.cards = [pile, ...this.cards];
         }
+        return this;
+    }
+    reverse() {
+        this.cards = this.cards.reverse();
         return this;
     }
     shuffle() {
