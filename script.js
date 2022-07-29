@@ -105,7 +105,7 @@ let cardCount;
 
 socket.on('game-start', (count, countList) => {
     cardCount = count;
-    console.log(cardCount);
+    //console.log(cardCount);
     initializeGameBoard();
     updateList(countList);
 });
@@ -153,6 +153,7 @@ socket.on('slap-count', (total) => {
 socket.on('slap-successful', (name, type, countList) => {
     updateList(countList);
     document.querySelector('.discard-pile').innerHTML = '';
+    document.querySelector('.burn-pile').innerHTML = '';
     console.log(`${name} slapped a ${type}!`);
     document.querySelector('.card-background').innerHTML = cardCount;
 });
