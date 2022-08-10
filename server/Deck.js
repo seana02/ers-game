@@ -40,7 +40,7 @@ export default class Deck {
     shuffle() {
         for (let i = this.size() - 1; i > 0; i--) {
             let rand = random(i);
-            if (rand == 1) continue;
+            if (rand == i) continue;
 
             let temp = this.cards[i];
             this.cards[i] = this.cards[rand];
