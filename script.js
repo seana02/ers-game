@@ -21,25 +21,51 @@ body.append(
 
 const formDiv = document.createElement('div');
 formDiv.classList.add('form-div');
-const nameForm = document.createElement('form');
+const loginForm = document.createElement('form');
+loginForm.classList.add('login-form');
 const nameInput = document.createElement('input');
 nameInput.type = 'text';
 nameInput.id = 'name-input';
 nameInput.placeholder = 'Name';
-nameForm.append(nameInput);
-const nameSubmit = document.createElement('button');
-nameSubmit.textContent = 'Join Game';
-nameSubmit.addEventListener('click', () => {
-    socket.emit('join-game', nameInput.value);
-    joinGame();
+nameInput.required = true;
+const roomInput = document.createElement('input');
+roomInput.type = 'number';
+roomInput.min = 100000;
+roomInput.max = 999999;
+roomInput.id = 'room-input';
+roomInput.placeholder = 'Room ID (6 Digits)';
+roomInput.required = true;
+loginForm.append(
+    nameInput,
+    roomInput
+);
+const warning = document.createElement('div');
+const formSubmit = document.createElement('button');
+formSubmit.textContent = 'Join Game';
+formSubmit.addEventListener('click', () => {
+    if (!nameInput.value || !roomInput.value || roomInput.value < 100000 || roomInput.value > 999999) {
+        warning.textContent = 'Please enter a name and 6 digit room ID';
+    } else {
+        socket.emit('join-game', nameInput.value, `roomID:${roomInput.value}`);
+    }
 });
 
 formDiv.append(
-    nameForm,
-    nameSubmit
+    loginForm,
+    formSubmit,
+    warning
 );
 centerMiddle.append(formDiv);
 
+let roomID;
+
+socket.on('join-fail', () => {
+    warning.textContent = 'Game in progress. Please join a different room';
+});
+socket.on('join-success', (room) => {
+    roomID = room;
+    joinGame();
+});
 socket.on('reconnect', joinGame);
 
 function joinGame() {
@@ -68,7 +94,7 @@ function loadWaitingRoom() {
     startButton.id = 'start-button';
     startButton.textContent = 'Start Game';
     startButton.addEventListener('click', () => {
-        socket.emit('game-start');
+        socket.emit('game-start', roomID);
     });
     topLeft.append(playerTable);
     centerMiddle.append(startButton);
@@ -126,10 +152,10 @@ function initializeGameBoard() {
     handContainer.append(`${cardCount}`);
 
     handContainer.addEventListener('click', () => {
-        socket.emit('play-hand');
+        socket.emit('play-hand', roomID);
     });
     discardPile.addEventListener('click', () => {
-        socket.emit('slap');
+        socket.emit('slap', roomID);
     });
 }
 
@@ -148,6 +174,7 @@ socket.on('next-card', (card, countList) => {
 
 socket.on('slap-count', (total) => {
     cardCount += total;
+    document.querySelector('.card-background').innerHTML = cardCount;
 });
 
 socket.on('slap-successful', (name, type, countList) => {
@@ -164,8 +191,6 @@ socket.on('bad-slap', (card, name, countList) => {
     burnPile.innerHTML = '';
     burnPile.appendChild(getFrontHTML(card));
     console.log(`Bad slap by ${name} and discarded a ${getCardString(card)}`);
-    cardCount--;
-    document.querySelector('.card-background').innerHTML = cardCount;
 });
 
 function updateList(countList) {
