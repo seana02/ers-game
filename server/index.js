@@ -209,7 +209,7 @@ function collectCards(room, id) {
 
 
 
-httpServer.listen(3000, () => {
+io.listen(process.env.PORT || 3000, () => {
     console.log('listening on port 3000');
 });
 

@@ -1,5 +1,5 @@
 import Deck from './server/Deck.js';
-let socket = io('http://localhost:3000');
+let socket = io('https://seana02-ers-game.herokuapp.com/');
 
 socket.emit('reconnect');
 
