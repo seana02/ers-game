@@ -12,6 +12,20 @@ let sumTen = false;
 let hoagie = false;
 let flush = false;
 
+export function setConditions(obj) {
+    joker = obj.joker || false;
+    double = obj.double || true;
+    sandwich = obj.sandwich || true;
+    topBottom = obj.topBottom || true;
+    marriage = obj.marriage || true;
+    divorce = obj.divorce || true;
+    run = obj.run || false;
+    runCount = Number(obj.runCount) || 3;
+    sumTen = obj.sumTen || false;
+    hoagie = obj.hoagie || false;
+    flush = obj.flush || false;
+}
+
 export default function checkSlap(deck) {
     return (joker && checkJoker(deck) && 'Joker')
         || (double && checkDouble(deck) && 'Double')

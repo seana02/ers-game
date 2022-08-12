@@ -90,14 +90,16 @@ export default class Deck {
 
 }
 
-export function generateDeck(n = 1) {
+export function generateDeck(n = 1, joker = true) {
     if (n < 1) { n = 1; }
     let suits = ['♠', '♣', '♥', '♦'];
     let values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
     let cards = [];
     for (let i = 0; i < n; i++) {
-        cards.push(new Card(0, '♠')); // JOKER 1
-        cards.push(new Card(0, '♥')); // JOKER 2
+        if (joker) {
+            cards.push(new Card(0, '♠')); // JOKER 1
+            cards.push(new Card(0, '♥')); // JOKER 2
+        }
         cards.push(suits.flatMap(suit => values.flatMap(value => new Card(value, suit))));
     }
 

@@ -1,5 +1,6 @@
 import Deck from './server/Deck.js';
 let socket = io('https://seana02-ers-game.herokuapp.com/');
+//let socket = io('localhost:3000');
 
 socket.emit('reconnect');
 
@@ -12,11 +13,14 @@ const topLeft = document.createElement('div');
 topLeft.id = 'top-left';
 const topRight = document.createElement('div');
 topRight.id = 'top-right';
+const bottomRight = document.createElement('div');
+bottomRight.id = 'bottom-right';
 body.append(
     bottomMiddle,
     centerMiddle,
     topLeft,
-    topRight
+    topRight,
+    bottomRight
 );
 
 const formDiv = document.createElement('div');
@@ -90,15 +94,103 @@ function loadWaitingRoom() {
         cardHeader
     );
     playerTable.append(tableHeader);
+    topLeft.append(playerTable);
+
+
     const startButton = document.createElement('button');
     startButton.id = 'start-button';
     startButton.textContent = 'Start Game';
     startButton.addEventListener('click', () => {
-        socket.emit('game-start', roomID);
+        socket.emit('game-start', roomID, {
+            joker: document.querySelector('#joker').checked,
+            double: document.querySelector('#double').checked,
+            sandwich: document.querySelector('#sandwich').checked,
+            topBottom: document.querySelector('#top-bottom').checked,
+            marriage: document.querySelector('#marriage').checked,
+            divorce: document.querySelector('#divorce').checked,
+            run: document.querySelector('#run').checked,
+            runCount: document.querySelector('#run-count-box').textContent,
+            sumTen: document.querySelector('#sum-ten').checked,
+            hoagie: document.querySelector('#hoagie').checked,
+            flush: document.querySelector('#flush').checked,
+        });
     });
-    topLeft.append(playerTable);
     centerMiddle.append(startButton);
+
+
+    const conditionChecklist = document.createElement('form');
+    conditionChecklist.id = 'condition-checklist';
+
+    const runCountBox = document.createElement('input');
+    runCountBox.type = 'number';
+    runCountBox.id = 'run-count-box';
+    runCountBox.placeholder = 'Run Count (Default: 3)';
+
+    conditionChecklist.append(
+        generateConditionDiv('joker', 'Joker', 'Slap on any Joker'),
+        generateConditionDiv('double', 'Double', 'Two identical values in a row'),
+        generateConditionDiv('sandwich', 'Sandwich', 'Two identical values have any single card between them'),
+        generateConditionDiv('top-bottom', 'Top Bottom', 'The top card\'s value matches the bottom card\'s value'),
+        generateConditionDiv('marriage', 'Marriage', 'A Queen and King in a row, in either order'),
+        generateConditionDiv('divorce', 'Divorce', 'A King and Queen with any single card between, in either order'),
+        generateConditionDiv('run', 'Run', 'Consecutive increasing or decreasing numbers appear in a row. Number of cards specified below'),
+        runCountBox,
+        generateConditionDiv('sum-ten', 'Sum to Ten', 'Two cards in a row sum to 10, with Ace considered 1'),
+        generateConditionDiv('hoagie', 'Hoagie', 'Two identical values have two cards of different values between them'),
+        generateConditionDiv('flush', 'Flush', 'Three cards in a row have the same suit')
+    );
+
+    bottomRight.append(conditionChecklist);
+
+    document.querySelector('#double').checked = true;
+    document.querySelector('#sandwich').checked = true;
+    document.querySelector('#top-bottom').checked = true;
+    document.querySelector('#marriage').checked = true;
+    document.querySelector('#divorce').checked = true;
 }
+
+function generateConditionDiv(boxID, label, tooltip) {
+    const checkBox = document.createElement('input');
+    checkBox.type = 'checkbox';
+    checkBox.id = boxID;
+    checkBox.classList.add('condition-checkbox');
+    const checkLabel = document.createElement('label');
+    checkLabel.htmlFor = boxID;
+    checkLabel.textContent = label;
+    checkLabel.classList.add('condition-label');
+    const checkHover = document.createElement('span');
+    checkHover.classList.add('condition-tooltip');
+    checkHover.textContent = tooltip;
+    const conditionDiv = document.createElement('div');
+    conditionDiv.classList.add('condition-div');
+    conditionDiv.append(
+        checkLabel,
+        checkBox,
+        checkHover
+    );
+    checkBox.addEventListener('click', () => {
+        //console.log(`${boxID}-checkbox clicked`);
+        socket.emit(`${boxID}-checkbox`, roomID, checkBox.checked);
+    });
+    return conditionDiv;
+}
+
+socket.on('joker-checkbox', (val) => { document.querySelector('#joker').checked = val; });
+socket.on('double-checkbox', (val) => { document.querySelector('#double').checked = val; });
+socket.on('sandwich-checkbox', (val) => { document.querySelector('#sandwich').checked = val; });
+socket.on('top-bottom-checkbox', (val) => { document.querySelector('#top-bottom').checked = val; });
+socket.on('marriage-checkbox', (val) => { document.querySelector('#marriage').checked = val; });
+socket.on('divorce-checkbox', (val) => { document.querySelector('#divorce').checked = val; });
+socket.on('run-checkbox', (val) => { document.querySelector('#run').checked = val; });
+socket.on('sum-ten-checkbox', (val) => { document.querySelector('#sum-ten').checked = val; });
+socket.on('hoagie-checkbox', (val) => { document.querySelector('#hoagie').checked = val; });
+socket.on('flush-checkbox', (val) => { document.querySelector('#flush').checked = val; });
+
+socket.on('disable-checkboxes', () => {
+    for (let box of document.querySelectorAll('.condition-checkbox')) {
+        box.disabled = true;
+    }
+});
 
 function addPlayerToList(name) {
     const playerTable = document.querySelector('#player-table');

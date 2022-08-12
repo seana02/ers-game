@@ -32,7 +32,38 @@ body {
   grid-column: -2 / -1;
   display: flex;
   justify-content: center;
-  padding-top: 10vh;
+  padding-top: 4px;
+}
+
+#bottom-right {
+  grid-row: -2 / -1;
+  grid-column: -2 / -1;
+  padding: 4px;
+}
+
+.condition-div {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px;
+  position: relative;
+}
+
+.condition-div .condition-tooltip {
+  visibility: hidden;
+  background-color: black;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 2px 4px;
+
+  position: absolute;
+  z-index: 1;
+  right: 105%;
+  width: max-content;
+}
+
+.condition-div:hover .condition-tooltip {
+  visibility: visible;
 }
 
 .form-div,

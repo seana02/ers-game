@@ -1,5 +1,5 @@
 import Deck, { generateDeck } from './Deck.js';
-import checkSlap from './Conditions.js';
+import checkSlap, { setConditions } from './Conditions.js';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -101,7 +101,7 @@ io.on('connect', (socket) => {
         //console.log(games);
     });
 
-    socket.on('game-start', (room) => {
+    socket.on('game-start', (room, conditionsObject) => {
         if (!games[room].inGame) {
             games[room].inGame = true;
 
@@ -111,6 +111,8 @@ io.on('connect', (socket) => {
                 io.to(games[room].playerIdList[i]).emit('game-start', games[room].decks[i].size(), games[room].decks.map(deck => deck.size()));
             }
 
+            setConditions(conditionsObject);
+            io.to(room).emit('disable-checkboxes');
             games[room].currentPlayerIndex = 0;
             games[room].numCardsToPlay = 1;
             games[room].slappable = true;
@@ -179,6 +181,17 @@ io.on('connect', (socket) => {
         }
     });
 
+    socket.on('joker-checkbox', (room, val) => { io.to(room).emit('joker-checkbox', val); });
+    socket.on('double-checkbox', (room, val) => { io.to(room).emit('double-checkbox', val); });
+    socket.on('sandwich-checkbox', (room, val) => { io.to(room).emit('sandwich-checkbox', val); });
+    socket.on('top-bottom-checkbox', (room, val) => { io.to(room).emit('top-bottom-checkbox', val); });
+    socket.on('marriage-checkbox', (room, val) => { io.to(room).emit('marriage-checkbox', val); });
+    socket.on('divorce-checkbox', (room, val) => { io.to(room).emit('divorce-checkbox', val); });
+    socket.on('run-checkbox', (room, val) => { io.to(room).emit('run-checkbox', val); });
+    socket.on('sum-ten-checkbox', (room, val) => { io.to(room).emit('sum-ten-checkbox', val); });
+    socket.on('hoagie-checkbox', (room, val) => { io.to(room).emit('hoagie-checkbox', val); });
+    socket.on('flush-checkbox', (room, val) => { io.to(room).emit('flush-checkbox', val); });
+
 });
 
 function findRoom(socket) {
@@ -205,7 +218,6 @@ function collectCards(room, id) {
     games[room].burn = new Deck([]);
     games[room].challengeStart = false;
 }
-
 
 
 
